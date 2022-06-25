@@ -24,15 +24,25 @@ yarn run ts-node --files ./scripts/Ballot/deployment.ts Proposal1 Proposal2 Prop
 ## Console.log
 
 Using address 0x95C1593f28d4623CB31E3510A929106283dE0D99
+
 Wallet balance 5
+
 Deploying Ballot contract
+
 Proposals:
+
 Proposal N. 1: Proposal1
+
 Proposal N. 2: Proposal2
+
 Proposal N. 3: Proposal3
+
 Proposal N. 4: Proposal4
+
 Awaiting confirmations
+
 Completed
+
 Contract deployed at 0x84cBdaC8288061750a97Dc0631482712AcE616d2
 
 # 2-Query Proposals
