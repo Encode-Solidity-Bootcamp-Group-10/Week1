@@ -22,8 +22,9 @@ A link to the CSV file containing the etherscan transactions: https://docs.googl
 # 1-Deploy
 
 ## Execution
-
+```
 yarn run ts-node --files ./scripts/Ballot/deployment.ts Proposal1 Proposal2 Proposal3 Proposal4
+```
 
 ## Console.log
 ```
