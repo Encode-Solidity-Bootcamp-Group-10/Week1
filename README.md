@@ -15,6 +15,10 @@
 - Write a report detailing the addresses, transaction hashes, description of the operation script being executed and console output from script execution for each step (Deployment, giving voting rights, casting/delegating and querying results).
 - (Extra) Use TDD methodology
 
+From the Chairman address: **0xc1484b53eb3a47e2007ae0e910ebb6cb5ec7000c**
+
+A link to the CSV file containing the etherscan transactions: https://docs.google.com/spreadsheets/d/1yV1Awdfup-Fl7t9CZ4feaFzyMPj2-78k3vLu6_3Zqjw/edit#gid=0 
+
 # 1-Deploy
 
 ## Execution
