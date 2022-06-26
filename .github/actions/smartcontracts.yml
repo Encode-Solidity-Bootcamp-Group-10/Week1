@@ -1,0 +1,23 @@
+name: smartcontracts
+on: [push]
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.node-version'
+          cache: 'yarn'
+          cache-dependency-path: ./yarn.lock
+      - name: Install Dependencies
+        working-directory: ./
+        run: yarn install
+      - name: Generate TS Types for Smartcontracts
+        working-directory: ./
+        run: yarn hardhat typechain
+      - name: Run Hardhat Tests
+        working-directory: ./
+        run: yarn hardhat test
