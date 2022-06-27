@@ -1,3 +1,4 @@
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 // eslint-disable-next-line node/no-missing-import
@@ -20,7 +21,7 @@ async function giveRightToVote(ballotContract: Ballot, voterAddress: any) {
 
 describe("Ballot", function () {
   let ballotContract: Ballot;
-  let accounts: any[];
+  let accounts: SignerWithAddress[];
 
   beforeEach(async function () {
     accounts = await ethers.getSigners();
@@ -87,16 +88,76 @@ describe("Ballot", function () {
   });
 
   describe("when the voter interact with the vote function in the contract", function () {
-    // TODO
-    it("is not implemented", async function () {
-      throw new Error("Not implemented");
+    it("should increase voteCount of selected proposal", async function () {
+      const voterAddress = accounts[1].address;
+      const voter = accounts[1];
+      await giveRightToVote(ballotContract, voterAddress);
+      const voteCountBefore = (await ballotContract.proposals(0)).voteCount;
+      await ballotContract.connect(voter).vote(0);
+      const voteCountAfter = (await ballotContract.proposals(0)).voteCount;
+
+      expect(voteCountBefore.toNumber()).to.equal(0);
+      expect(voteCountAfter.toNumber()).to.equal(1);
+    });
+
+    it("should update voter's struct details", async function () {
+      const voterAddress = accounts[1].address;
+      const voter = accounts[1];
+      await giveRightToVote(ballotContract, voterAddress);
+      await ballotContract.connect(voter).vote(0);
+      const hasVoted = (await ballotContract.voters(voterAddress)).voted;
+      const proposalVoted = (await ballotContract.voters(voterAddress)).vote;
+
+      expect(hasVoted).to.equal(true);
+      expect(proposalVoted.toNumber()).to.equal(0);
+    });
+
+    it("should not allow voter with no weight", async function () {
+      const voter = accounts[1];
+
+      await expect(ballotContract.connect(voter).vote(0)).to.be.revertedWith(
+        "Has no right to vote"
+      );
+    });
+
+    it("should NOT allow previously voted voters", async function () {
+      const voterAddress = accounts[1].address;
+      const voter = accounts[1];
+      await giveRightToVote(ballotContract, voterAddress);
+      await ballotContract.connect(voter).vote(0);
+
+      await expect(ballotContract.connect(voter).vote(0)).to.have.revertedWith(
+        "Already voted."
+      );
     });
   });
 
   describe("when the voter interact with the delegate function in the contract", function () {
-    // TODO
-    it("is not implemented", async function () {
-      throw new Error("Not implemented");
+    it("should delegate their vote to another voter", async function () {
+      const voterAddress = accounts[1].address;
+      const delegateAddress = accounts[2].address;
+      const voter = accounts[1];
+      await giveRightToVote(ballotContract, voterAddress);
+      await giveRightToVote(ballotContract, delegateAddress);
+      const voterDelegateBefore = (await ballotContract.voters(voterAddress))
+        .delegate;
+      const delegateWeightBefore = (
+        await ballotContract.voters(delegateAddress)
+      ).weight;
+      await ballotContract.connect(voter).delegate(delegateAddress);
+      const delegateWeightAfter = (await ballotContract.voters(delegateAddress))
+        .weight;
+      const voterDelegateAfter = (await ballotContract.voters(voterAddress))
+        .delegate;
+
+      // Default delegate address value is 0x00...
+      expect(voterDelegateBefore).to.equal(ethers.constants.AddressZero);
+      // delegate address' weight is 1 initially
+      expect(delegateWeightBefore.toNumber()).to.equal(1);
+      // voter's delegated address has been set
+      expect(voterDelegateAfter).to.equal(delegateAddress);
+      // Increment delegate's weight by 1
+      expect(delegateWeightAfter.toNumber()).to.equal(2);
     });
   });
 
